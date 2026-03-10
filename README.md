@@ -9,6 +9,8 @@ Uses [ebook2audiobook](https://github.com/DrewThomasson/ebook2audiobook) for
 OCR (tesseract) and text-to-speech. 
 Outputs audiobooks in .m4b file format for MacOS Books/IOS Itunes apps. 
 
+Really just screen capture middleware for ebook2audiobook. Currently building an audiobook is slow going for any substantial number of captures. Considering using Claude Haiku vision to process images into text via API call and then using ebook2audiobook. Maybe cost a $1 or 2 per book. Not sure yet whether the speed bottleneck is the OCR or TTS engine. 
+
 Use requires some scrolling, clicking and paying attention but presumably your AI agent can do that for you. 
 
 **Will be testing with OpenClaw soon -> Maybe OpenClaw could do an audiobook conversion without this middleware, unsure yet.**
