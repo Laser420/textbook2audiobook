@@ -15,7 +15,7 @@ Use requires some scrolling, clicking and paying attention but presumably your A
 
 **Will be testing with OpenClaw soon -> Maybe OpenClaw could do an audiobook conversion without this middleware, unsure.**
 
-Screenshot of what it looks like - just place the section to capture inbetween the green lines. The final 1/8 of the previous captured image is shown on the bottom to help guide where to capture next.
+Screenshot of what it looks like - just place the section to capture inbetween the green lines. The final bit of the previous captured image is shown on the bottom to help guide where to capture next.
 ![Here is what the tool looks like in use.](image.png)
 
 ## Requirements
