@@ -13,6 +13,7 @@ Use requires some scrolling, clicking and paying attention but presumably your A
 
 **Will be testing with OpenClaw soon -> Maybe OpenClaw could do an audiobook conversion without this middleware, unsure yet.**
 
+Screenshot of what it looks like:
 ![Here is what the tool looks like in use.](image.png)
 
 ## Requirements
