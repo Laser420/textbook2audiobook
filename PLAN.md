@@ -13,7 +13,7 @@
 | 7 | Install & Distribution | Complete (running via `python3 main.py`, not installed CLI) |
 
 **Key deviations from original plan:**
-- **Section 3**: Region selector is now a legacy feature (`new --reselect`). The primary capture UI uses a resizable transparent window — no pre-selected region needed.
+- **Section 3**: Region selector removed. The primary capture UI uses a resizable transparent window — no pre-selected region needed.
 - **Section 4**: Capture loop replaced with CaptureWindow (all-tkinter two-window UI). No `input()` loop, no preview thread, no queue-based communication.
 - **Section 5**: CBZ replaced with PDF (for viewing) and TIFF (for audio conversion). ebook2audiobook does not actually support CBZ despite their README.
 - **Section 6**: Audio command passes a multi-page TIFF (not PDF/CBZ) because ebook2audiobook skips OCR on image-embedded PDFs.
@@ -36,8 +36,7 @@ for OCR and TTS conversion. No AI API. No cost beyond ebook2audiobook itself.
 textbook2audiobook/
 ├── main.py            # CLI entry point — click group + all commands
 ├── session.py         # Session dataclass and JSON persistence
-├── capture.py         # CaptureWindow UI + take_screenshot + select_region (legacy)
-├── preview_server.py  # Legacy: standalone subprocess preview window (unused)
+├── capture.py         # CaptureWindow UI + take_screenshot
 ├── requirements.txt   # Dependencies
 ├── pyproject.toml     # Install config
 ├── PLAN.md            # This file
@@ -97,7 +96,6 @@ zero-padded numbers so they sort correctly.
 | `session_id` | str    | 8-char hex ID |
 | `title`      | str    | Book title (used for output filename) |
 | `created_at` | str    | ISO timestamp |
-| `region`     | dict   | Optional — legacy field for backward compat |
 
 `page_count` is derived from the number of `.png` files in `screenshots/`,
 not stored in session.json.
@@ -160,12 +158,7 @@ architecture.
 | r / R | Redo (delete last screenshot) |
 | q / Q / Escape | Done |
 
-### 3.5 Legacy Region Selector
-
-The original drag-select region selector (`select_region()`) is still available
-via `python3 main.py new --reselect` but is not part of the primary workflow.
-
-### 3.6 Why Not input() + Preview Thread
+### 3.5 Why Not input() + Preview Thread
 
 The original plan used `input()` for the capture loop and a daemon thread for
 the preview window. This caused `Tcl_WaitForEvent: Notifier not initialized`
@@ -185,7 +178,7 @@ images = [Image.open(p).convert("RGB") for p in screenshots]
 images[0].save(out, save_all=True, append_images=images[1:])
 ```
 
-Output: `output/<title_slug>.pdf`
+Output: `output/<title_slug>/<title_slug>.pdf`
 
 ### 4.2 TIFF (audio command)
 
@@ -195,7 +188,7 @@ The `audio` command creates a multi-page TIFF for ebook2audiobook:
 images[0].save(out, save_all=True, append_images=images[1:], compression="tiff_deflate")
 ```
 
-Output: `output/<title_slug>.tiff`
+Output: `output/<title_slug>/<title_slug>.tiff`
 
 ### 4.3 Why TIFF for Audio, Not PDF
 
@@ -234,15 +227,19 @@ cmd = [
     "--ebook", str(tiff_path.resolve()),
     "--output_dir", str(output_dir.resolve()),
     "--language", "eng",
+    "--speed", str(speed),
 ] + list(extra_args)
 ```
+
+`--speed` (1.0–3.0) controls narration speed (XTTSv2 only). Prompted
+interactively if not provided via `--speed` flag.
 
 Extra args from the user are forwarded directly to ebook2audiobook (e.g.
 `--voice`, `--tts_engine`, `--device`).
 
 ### 5.3 Output Directory
 
-Audiobook written to `output/<title_slug>_audiobook/` by default.
+Audiobook written to `output/<title_slug>/` by default (same directory as PDF and TIFF).
 Overridable with `--output` on the `audio` command.
 
 ### 5.4 Error Handling

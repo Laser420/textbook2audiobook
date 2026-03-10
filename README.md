@@ -2,6 +2,8 @@
 
 I found myself looking for a way to turn my online textbooks into audiobooks so I could play Wii Sports Resort and feel productive. 
 
+Also really didn't want to shill out extra cash to get the audiobook add-on for a textbook which I am already subscribing to. 
+
 Capture online textbook pages via screenshot and convert them to an audiobook.
 Uses [ebook2audiobook](https://github.com/DrewThomasson/ebook2audiobook) for
 OCR (tesseract) and text-to-speech. 
@@ -10,6 +12,8 @@ Outputs audiobooks in .m4b file format for MacOS Books/IOS Itunes apps.
 Use requires some scrolling, clicking and paying attention but presumably your AI agent can do that for you. 
 
 **Will be testing with OpenClaw soon -> Maybe OpenClaw could do an audiobook conversion without this middleware, unsure yet.**
+
+![Here is what the tool looks like in use.](image.png)
 
 ## Requirements
 

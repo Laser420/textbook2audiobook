@@ -12,8 +12,7 @@ No AI API, no cost.
 ```
 main.py            # CLI — all 5 commands
 session.py         # Session dataclass + JSON persistence
-capture.py         # select_region (tkinter overlay) + take_screenshot (screencapture) + CaptureWindow (two-window UI)
-preview_server.py  # Legacy: standalone subprocess preview window (no longer used by main flow)
+capture.py         # take_screenshot (screencapture) + CaptureWindow (two-window UI)
 requirements.txt   # mss, Pillow, click, rich
 pyproject.toml     # pip install . → exposes `textbook2audiobook` command
 PLAN.md            # Implementation plan with completion status
@@ -61,13 +60,10 @@ drags/resizes it to frame their textbook content, then clicks Capture.
 so `screencapture` gets a clean image of the textbook. Then both reappear.
 
 **No CFRunLoop conflict:** all interaction is via tkinter events/buttons. `input()`
-and readline are never called, so the Tcl notifier crash cannot occur. The old
-subprocess preview architecture (`preview_server.py`, `PreviewWindow`) is no longer
-used — kept for reference only.
+and readline are never called, so the Tcl notifier crash cannot occur.
 
 **No pre-selected region:** the capture region is determined dynamically from the
-window's canvas geometry at capture time. `session.region` is no longer required
-(still an optional field in session.json for backward compat).
+window's canvas geometry at capture time.
 
 ### TIFF for ebook2audiobook (not PDF)
 ebook2audiobook's PDF handler extracts XHTML via PyMuPDF. For image-only PDFs,
@@ -85,10 +81,11 @@ Screenshots are combined into a single PDF (one image per page) using
 `Pillow Image.save(save_all=True)`. Output goes to `output/` directory.
 
 ### Output directory
-All generated files go into `output/`:
-- `output/<title>.pdf` — from `pack`
-- `output/<title>.tiff` — intermediate file from `audio`
-- `output/<title>_audiobook/` — ebook2audiobook output from `audio`
+All generated files for a book go into `output/<title>/`:
+- `output/<title>/<title>.pdf` — from `pack`
+- `output/<title>/<title>.tiff` — intermediate file from `audio`
+- `output/<title>/<title>.m4b` — audiobook from ebook2audiobook
+- `output/<title>/<title>.vtt` — subtitles from ebook2audiobook
 
 ### Screenshots
 `/usr/sbin/screencapture -x -R x,y,w,h` subprocess — NOT mss. Screencapture
@@ -105,9 +102,11 @@ are visible in the IDE file tree.
 ### ebook2audiobook
 - Path stored in `~/.textbook2audiobook/e2a_path` (global user preference)
 - Auto-discovered at `~/ebook2audiobook/` or `./ebook2audiobook/`, else prompts
-- Invocation: `bash ebook2audiobook.command --headless --ebook <file>.tiff --output_dir <dir> --language eng`
+- Invocation: `bash ebook2audiobook.command --headless --ebook <file>.tiff --output_dir <dir> --language eng --speed <n>`
 - Note: the flag is `--output_dir` (NOT `--output_folder`)
+- `--speed` (1.0–3.0): narration speed, prompted interactively or via `--speed` flag
 - Extra args are forwarded (e.g. `--tts_engine`, `--voice`, `--device`)
+- Speed only works with XTTSv2 engine (the default)
 
 ### Session picker
 When multiple sessions exist and no `-s` flag, `_pick_session()` shows a
