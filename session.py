@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import re
 import uuid
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 
@@ -15,7 +15,6 @@ class Session:
     session_id: str
     title: str
     created_at: str
-    region: dict = field(default_factory=dict)
 
     # ── factories ────────────────────────────────────────────────────────────
 
@@ -37,7 +36,9 @@ class Session:
     @classmethod
     def load(cls, session_id: str) -> Session:
         path = SESSIONS_DIR / session_id / "session.json"
-        return cls(**json.loads(path.read_text()))
+        data = json.loads(path.read_text())
+        data.pop("region", None)  # legacy field, no longer used
+        return cls(**data)
 
     @classmethod
     def list_all(cls) -> list[Session]:

@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from capture import CaptureWindow, check_screen_permission, select_region
+from capture import CaptureWindow, check_screen_permission
 from session import Session
 
 console = Console()
@@ -126,27 +126,8 @@ def cli() -> None:
 
 
 @cli.command()
-@click.option("--session", "-s", "session_id", default=None, help="Session ID to reselect region for")
-@click.option("--reselect", is_flag=True, hidden=True, help="Legacy: drag-select a fixed region")
-def new(session_id: str | None, reselect: bool) -> None:
+def new() -> None:
     """Create a new capture session."""
-    if reselect:
-        # Legacy drag-select workflow (kept for power users)
-        _require_screen_permission()
-        session = _pick_session(session_id)
-        click.pause("Press Enter when ready to drag-select a region…")
-        region = select_region()
-        if not region:
-            console.print("[red]No region selected. Aborted.[/red]")
-            sys.exit(1)
-        session.region = region
-        session.save()
-        console.print(
-            f"[green]✓ Region saved:[/green] {region['width']}×{region['height']} px "
-            f"at ({region['left']}, {region['top']})"
-        )
-        return
-
     title = click.prompt("Book title")
     session = Session.create(title=title)
     session.save()
